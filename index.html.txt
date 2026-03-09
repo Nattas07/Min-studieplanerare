@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Min Studieplanerare</title>
+
+<style>
+/* Grundinställningar */
+body{
+    background:#c2a27c;
+    font-family:Georgia, serif;
+    margin:0;
+    padding:30px;
+}
+
+.container{
+    max-width:1000px;
+    margin:auto;
+}
+
+/* Rubrik högst upp */
+.header h1 {
+    margin: 0;
+    font-size: 32px;
+    font-weight: bold;
+    text-align: left;
+    margin-bottom: 5px; /* mellanrum under rubriken */
+}
+
+/* Countdown över Studieverktyg */
+.countdown-top {
+    text-align: right;      /* Håller texten till höger */
+    margin-bottom: 10px;    /* Större mellanrum under countdownen */
+}
+
+/* Rubriker inom countdown */
+.countdown-top h3 {
+    font-size: 16px;
+    line-height: 1.2;      /* Mindre radavstånd mellan h3 och h2 
+    margin: 0 0 5px 0;     /* Lite mellanrum under h3 */
+}
+
+/* Lägg till uppgift */
+.add-box{
+    background:white;
+    padding:15px 20px;
+    border:3px solid gold;
+    border-radius:10px;
+}
+
+input, select, button{
+    padding:4px 6px;
+    margin:2px 3px;
+    font-size:14px;
+}
+
+button{
+    cursor:pointer;
+}
+
+/* Uppgiftsrutor */
+.task-box{
+    display:inline-block;
+    width:350px;
+    padding:6px 15px;
+    :10px 0;
+    border-radius:8px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.1);
+    border:3px solid transparent;
+    vertical-align:top;
+    height: auto;
+    min-height: 120px; 
+    overflow: hidden;
+}
+
+.started{
+    border-color:silver;
+}
+
+.klar{
+    border-color:gold;
+    text-decoration:line-through;
+}
+
+/* Task types färger */
+.task-laxa{
+    background:#d0f0c0;
+}
+
+.task-inlamning{
+    background:#f4c2c2;
+}
+
+.task-prov{
+    background:#add8e6;
+}
+
+.task-type{
+    font-weight:bold;
+    font-size:16px;
+    display:block;
+    margin-bottom:5px;
+}
+
+/* Verktygs-boxar (Pomodoro & Miniräknare) */
+.tool-box{
+    display:inline-block;
+    width:auto;
+    background:#fffaf0;
+    padding:15px 20px;
+    margin:10px 0;
+    border-radius:8px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.1);
+    border:3px solid gold;
+    vertical-align:top;
+}
+
+/* Timer och miniräknare */
+.calculator-display{
+    width:160px;
+    padding:5px;
+    margin-bottom:10px;
+    text-align:right;
+}
+
+.task-box button, .tool-box button, .task-box input, .tool-box input {
+    margin:2px 3px;
+    padding:4px 6px;
+    font-size:14px;
+}
+
+/* Kom ihåg */
+.remember-box{
+    background:white;
+    padding:10px 15px;
+    border:3px solid gold;
+    border-radius:8px;
+    margin:15px 0;
+    max-width:200px;
+}
+
+#remember-list li{
+    margin:5px 0;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+#remember-list li input[type="checkbox"]{
+    transform: scale(1.2);
+}
+
+.tasks-section{
+    display:flex;
+    gap:40px;
+    align-items:flex-start;
+}
+
+.tasks-left{
+    flex:3;
+}
+
+.remember-side{
+    flex:1;
+    max-width:250px;
+}
+
+
+</style>
+</head>
+<body>
+<img src="{{ url_for('static', filename='logo.png') }}" width="200">
+
+<div class="container">
+
+<h1>Min studieplanering</h1>
+
+<div class="countdown-top">
+    <h3>Dagar kvar till:</h3>
+    <form method="POST" action="/add_event">
+        <input type="text" name="name" placeholder="Händelse..." required>
+        <input type="date" name="date" required>
+        <button type="submit">Spara</button>
+    </form>
+
+    {% if event and event.name %}
+    <h2>{{ event.name }} – {{ days_left }} dagar kvar</h2>
+    {% endif %}
+
+</div>
+<!-- Top-section: Lägg till uppgift (vänster) + Countdown + Kom ihåg (höger) -->
+
+    </div>
+
+</div> <!-- slut top-section -->
+
+<!-- Lägg till uppgift -->
+    <div style="flex:0 0 250px;">
+            <h2>Lägg till uppgift</h2>
+            <form method="POST" action="/add">
+                <input type="text" name="title" placeholder="Ny uppgift..." required>
+                <input type="date" name="deadline" required>
+                <input type="text" name="links" placeholder="Länkar (separera med komma)">
+                <select name="task_type" required>
+                    <option value="laxa">Läxa</option>
+                    <option value="inlamning">Inlämning</option>
+                    <option value="prov">Prov</option>
+                </select>
+                <button type="submit">Lägg till uppgift</button>
+            </form>
+        </div>
+    </div>
+
+<div class="tasks-section">
+
+<div class="tasks-left">
+
+<h2>Aktiva uppgifter</h2>
+{% set type_names = {"laxa":"Läxa","inlamning":"Inlämning","prov":"Prov"} %}
+{% for t in tasks if t.status != "Klar" %}
+<div class="task-box {% if t.status == 'Påbörjad' %}started{% endif %} {% if t.task_type %}task-{{ t.task_type }}{% endif %}">
+    <span class="task-type">{{ type_names[t.task_type] }}</span>
+    <strong>{{ t.title }}</strong><br>
+    Deadline: {{ t.deadline }}<br>
+    {{ t.days_left }} dagar kvar<br>
+
+    {% if t.links %}
+        {% for link in t.links %}
+            <a href="{{ link }}" target="_blank">Öppna länk {{ loop.index }}</a><br>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST" action="/update_status">
+        <input type="hidden" name="task_id" value="{{ t.id }}">
+        <button type="submit" name="status" value="Påbörjad">Påbörjad</button>
+        <button type="submit" name="status" value="Klar">Klar</button>
+        <button type="submit" name="delete" value="delete">Ta bort</button>
+    </form>
+</div>
+{% endfor %}
+
+<h2>Klara uppgifter</h2>
+{% for t in tasks if t.status == "Klar" %}
+<div class="task-box klar {% if t.task_type %}task-{{ t.task_type }}{% endif %}">
+    <span class="task-type">{{ type_names[t.task_type] }}</span>
+    <s><strong>{{ t.title }}</strong></s><br>
+    Deadline: {{ t.deadline }}<br>
+    <form method="POST" action="/update_status">
+        <input type="hidden" name="task_id" value="{{ t.id }}">
+        <button type="submit" name="delete" value="delete">Ta bort</button>
+    </form>
+</div>
+{% endfor %}
+
+</div>
+
+<div class="remember-side">
+
+    <!-- Kom ihåg-lista -->
+    <h2>Kom ihåg</h2>
+    <div class="remember-box">
+        <input type="text" id="remember-input" placeholder="Skriv något att komma ihåg">
+        <button onclick="addRemember()">Lägg till</button>
+        <ul id="remember-list"></ul>
+    </div>
+
+</div>
+
+<div class="tools">
+<h2>Studieverktyg</h2>
+<div class="tool-box">
+    <h3>Pomodoro Timer</h3>
+    <label>Plugg (min): <input type="number" id="study" value="25" min="1"></label>
+    <label>Rast (min): <input type="number" id="break" value="5" min="1"></label>
+    <h1 id="timer">25:00</h1>
+    <button onclick="startStudy()">Starta plugg</button>
+    <button onclick="startBreak()">Starta rast</button>
+    <button onclick="resetTimer()">Nollställ timer</button>
+
+</div>
+
+<div class="tool-box">
+    <h3>Miniräknare</h3>
+    <input type="text" id="calc-display" class="calculator-display" readonly>
+    <br>
+    <button onclick="addCalc('7')">7</button>
+    <button onclick="addCalc('8')">8</button>
+    <button onclick="addCalc('9')">9</button>
+    <button onclick="addCalc('/')">/</button>
+    <br>
+    <button onclick="addCalc('4')">4</button>
+    <button onclick="addCalc('5')">5</button>
+    <button onclick="addCalc('6')">6</button>
+    <button onclick="addCalc('*')">*</button>
+    <br>
+    <button onclick="addCalc('1')">1</button>
+    <button onclick="addCalc('2')">2</button>
+    <button onclick="addCalc('3')">3</button>
+    <button onclick="addCalc('-')">-</button>
+    <br>
+    <button onclick="addCalc('0')">0</button>
+    <button onclick="calculate()">=</button>
+    <button onclick="clearCalc()">C</button>
+    <button onclick="addCalc('+')">+</button>
+</div>
+</div> <!-- slut tools -->
+
+</div> <!-- slut container -->
+
+<audio id="alarm-sound" src="https://www.soundjay.com/buttons/sounds/beep-07.mp3" preload="auto"></audio>
+
+<script>
+/* ===== Pomodoro ===== */
+let timerInterval;
+let time; // tiden i sekunder
+
+function startTimer(minutes){
+    clearInterval(timerInterval);
+    time = minutes * 60; // sätter time i sekunder
+
+    timerInterval = setInterval(()=>{
+        let mins = Math.floor(time/60);
+        let secs = time % 60;
+        document.getElementById("timer").innerText =
+            mins.toString().padStart(2,'0') + ":" + secs.toString().padStart(2,'0');
+        time--;
+        if(time < 0){
+            clearInterval(timerInterval);
+            timerInterval = null;
+            document.getElementById("alarm-sound").play();
+            alert("Tiden är slut!");
+        }
+    }, 1000);
+}
+
+function startStudy(){
+    let studyMinutes = parseInt(document.getElementById("study").value) || 25;
+    startTimer(studyMinutes);
+}
+
+function startBreak(){
+    let breakMinutes = parseInt(document.getElementById("break").value) || 5;
+    startTimer(breakMinutes);
+}
+
+// ✅ Ny reset-funktion
+function resetTimer() {
+    clearInterval(timerInterval);  // Stoppar aktuell timer
+    timerInterval = null;
+
+    // Läs in plugg-tid
+    let studyMinutes = parseInt(document.getElementById("study").value) || 25;
+    time = studyMinutes * 60; // Sätt time tillbaka i sekunder
+
+    // Uppdatera displayen
+    document.getElementById("timer").innerText =
+        studyMinutes.toString().padStart(2,'0') + ":00";
+}
+
+/* ===== Miniräknare ===== */
+function addCalc(value) {
+    document.getElementById("calc-display").value += value;
+}
+
+function calculate() {
+    try {
+        document.getElementById("calc-display").value =
+            eval(document.getElementById("calc-display").value);
+    } catch {
+        alert("Felaktigt uttryck");
+    }
+}
+
+function clearCalc() {
+    document.getElementById("calc-display").value = "";
+}
+
+/* ===== Kom ihåg-lista ===== */
+function loadRemember(){
+    const items = JSON.parse(localStorage.getItem('rememberItems') || '[]');
+    const list = document.getElementById('remember-list');
+    list.innerHTML = '';
+    items.forEach((item,index)=>{
+        const li = document.createElement('li');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = item.checked;
+        checkbox.onchange = ()=>{
+            items[index].checked = checkbox.checked;
+            localStorage.setItem('rememberItems', JSON.stringify(items));
+        };
+        li.appendChild(checkbox);
+
+        const span = document.createElement('span');
+        span.innerText = item.text;
+        li.appendChild(span);
+
+        const removeBtn = document.createElement('button');
+        removeBtn.innerText = 'Ta bort';
+        removeBtn.onclick = ()=>{
+            items.splice(index,1);
+            localStorage.setItem('rememberItems', JSON.stringify(items));
+            loadRemember();
+        };
+        li.appendChild(removeBtn);
+
+        list.appendChild(li);
+    });
+}
+
+function addRemember(){
+    const input = document.getElementById('remember-input');
+    const text = input.value.trim();
+    if(text === '') return;
+    const items = JSON.parse(localStorage.getItem('rememberItems') || '[]');
+    items.push({text:text,checked:false});
+    localStorage.setItem('rememberItems', JSON.stringify(items));
+    input.value = '';
+    loadRemember();
+}
+
+// Ladda listan vid start
+loadRemember();
+</script>
+
+</body>
+</html>
+
