@@ -1,0 +1,107 @@
+[
+    {
+        "id": "b5e16702-c686-433e-8c21-2a315e7fef6b",
+        "text": "matte",
+        "deadline": "2026-03-05",
+        "typ": "Prov",
+        "status": "Ej påbörjad"
+    },
+    {
+        "id": "8ba01ab0-fe54-4868-9e2c-3a830565b8e3",
+        "text": "matte",
+        "deadline": "2026-03-12",
+        "typ": "Inlämning",
+        "status": "Klar"
+    },
+    {
+        "id": "ea98f9b8-bda9-4aeb-84d5-39bc88b9c43d",
+        "text": "matte",
+        "deadline": "2026-03-03",
+        "typ": "Läxa",
+        "status": "Klar"
+    },
+    {
+        "id": "32668e3b-8fae-4d97-b899-a823a59262f2",
+        "text": "matematik",
+        "deadline": "",
+        "typ": "Läxa",
+        "status": "Ej påbörjad"
+    },
+    {
+        "id": "7d966a60-8f2a-496f-8bc8-c93fec440c51",
+        "text": "matematik",
+        "deadline": "2026-03-05",
+        "typ": "Läxa",
+        "status": "Ej påbörjad"
+    },
+    {
+        "id": "1f7dbe6d-deae-4239-9ef2-fb3f45075829",
+        "text": "matematik",
+        "deadline": "2026-03-05",
+        "typ": "Läxa",
+        "status": "Ej påbörjad"
+    },
+    {
+        "id": "21821a97-761b-41d8-9e23-7d45733178c4",
+        "text": "matematik",
+        "deadline": "2026-03-05",
+        "typ": "Läxa",
+        "status": "Ej påbörjad"
+    },
+    {
+        "id": "ac612dc6-8a54-45eb-addd-4d2c85e41964",
+        "text": "matematik",
+        "deadline": "2026-03-05",
+        "typ": "Läxa",
+        "status": "Ej påbörjad"
+    },
+    {
+        "id": "67c06c55-24af-4217-837e-f086e0813cbc",
+        "text": "matematik",
+        "deadline": "2026-03-05",
+        "typ": "Läxa",
+        "status": "Ej påbörjad"
+    },
+    {
+        "id": "f5dd257b-03db-4230-a800-bb43e5a97d72",
+        "text": "matematik",
+        "deadline": "2026-03-05",
+        "typ": "Läxa",
+        "status": "Ej påbörjad"
+    },
+    {
+        "id": "da2e4b01-72ef-450b-b099-621c95a51c8a",
+        "text": "matematik",
+        "deadline": "2026-03-06",
+        "typ": "Prov",
+        "status": "Ej påbörjad"
+    },
+    {
+        "id": "5e71372c-4bff-479b-97ba-ef043a1aa9d0",
+        "text": "matematik",
+        "deadline": "2026-03-05",
+        "typ": "Prov",
+        "status": "Ej påbörjad"
+    },
+    {
+        "id": "16782ece-7078-40af-b2fa-8085b268d28c",
+        "text": "matematik",
+        "deadline": "2026-03-04",
+        "typ": "Prov",
+        "status": "Ej påbörjad"
+    },
+    {
+        "id": "e1d513d5-6d24-4650-b931-ac724a624777",
+        "text": "matematik",
+        "deadline": "2026-03-05",
+        "typ": "Prov",
+        "status": "Ej påbörjad"
+    },
+    {
+        "id": "fd66c2d3-e4fd-4cd4-a041-f6215b7430fd",
+        "text": "matematik",
+        "deadline": "2026-03-05",
+        "typ": "Prov",
+        "status": "Ej påbörjad"
+    }
+]

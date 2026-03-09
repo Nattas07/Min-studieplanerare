@@ -1,0 +1,31 @@
+from flask import Flask, request, render_template_string
+
+app = Flask(__name__)
+
+# Lista som sparar uppgifter
+plan = []
+
+@app.route("/", methods=["GET", "POST"])
+def index():
+    if request.method == "POST":
+        uppgift = request.form.get("uppgift")
+        if uppgift:
+            plan.append(uppgift)
+    # Enkel HTML-sida med formulär och lista
+    html = """
+    <h1>Min Studieplanerare</h1>
+    <form method="post">
+        Lägg till uppgift: <input type="text" name="uppgift">
+        <input type="submit" value="Lägg till">
+    </form>
+    <h2>Dina uppgifter:</h2>
+    <ul>
+    {% for item in plan %}
+        <li>{{ item }}</li>
+    {% endfor %}
+    </ul>
+    """
+    return render_template_string(html, plan=plan)
+
+if __name__ == "__main__":
+    app.run(debug=True)
